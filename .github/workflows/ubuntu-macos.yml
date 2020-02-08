@@ -20,6 +20,10 @@ jobs:
       - run: ruby -v
       - run: echo $PATH
       - run: env
+
+      - run: ruby -e 'puts RbConfig::CONFIG["bindir"]'
+      - run: ls -l $(ruby -e 'puts RbConfig::CONFIG["bindir"]')
+
       - run: which rake
 
       - run: rake install_dependencies
