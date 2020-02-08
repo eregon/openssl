@@ -4,30 +4,28 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: >-
-      ${{matrix.ruby}}  ${{matrix.os}}
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-18.04', 'macos' ]
-        ruby: [ ruby-head, 2.7, 2.6, 2.5, 2.4, 2.3 ]
+        os: [ ubuntu-latest, macos-latest ]
+        ruby: [ ruby-head, 2.7, 2.6 ]
     steps:
-      - name: repo checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: load ruby
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{matrix.ruby}}
+          ruby-version: ${{ matrix.ruby }}
 
-      - name: depends
-        run:  rake install_dependencies
+      - run: ruby -v
+      - run: echo $PATH
+      - run: env
+      - run: which rake
 
-      - name: compile
-        run:  rake compile -- --enable-debug
+      - run: rake install_dependencies
 
-      - name: test
-        run:  rake test TESTOPTS="-v --no-show-detail-immediately" OSSL_MDEBUG=1
+      - run: rake compile -- --enable-debug
+
+      - run: rake test TESTOPTS="-v --no-show-detail-immediately" OSSL_MDEBUG=1
         env:
           CI: true
